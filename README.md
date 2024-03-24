@@ -2,7 +2,9 @@ Code and data for running "bootstrap comparison of attractor dimension" (BCAD). 
 
 To run, just call  
 
-python main.py
+`python main.py`
+
+You can then look inside `main.py` see how to run it on your data.
 
 Install package by 
 1. Clone this repo: `git clone https://github.com/yairdaon/BCAD`
