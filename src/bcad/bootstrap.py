@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
-from joblib import Parallel, delayed, parallel_backend
-from teaspoon.parameter_selection.FNN_n import FNN_n
+from joblib import Parallel, delayed
 
-from dimensions import basic, BESTIMATORS
+from .dimensions import basic, BESTIMATORS
+from .fnn import FNN_n
+
 
 def bootstrap(df,
               n_bootstrap,
@@ -11,7 +12,6 @@ def bootstrap(df,
               predictors=None,
               estimators=BESTIMATORS,
               n_jobs=-1):
-    
     predictors = df.columns if predictors is None else predictors
     predictors = [pred for pred in predictors if pred != 'year']
 
@@ -22,7 +22,7 @@ def bootstrap(df,
         lagged, dic = transform_series(df[predictor], tau=tau)
         for estimator in estimators:
             point_estimates.loc[estimator, predictor] = basic(-1, lagged=lagged, estimator=estimator, dic={})['stat']
-    
+
     ## Generator to feed the Pool
     it = phase_bootstrap(df=df,
                          n_bootstrap=n_bootstrap,
@@ -31,7 +31,8 @@ def bootstrap(df,
                          tau=tau,
                          point_estimates=point_estimates)
 
-    res = [basic(*p) for p in it] if n_jobs == 1 else Parallel(n_jobs=n_jobs, backend='loky', verbose=1)(delayed(basic)(*p) for p in it)
+    res = [basic(*p) for p in it] if n_jobs == 1 else Parallel(n_jobs=n_jobs, backend='loky', verbose=1)(
+        delayed(basic)(*p) for p in it)
     res = pd.DataFrame(res)
     return res
 
@@ -85,17 +86,16 @@ def lag(df,
 
 def transform_series(series: pd.Series,
                      tau: int):
-
-    if series.size < 100: ## 100 is arbitrary
+    if series.size < 100:  ## 100 is arbitrary
         raise ValueError(f"Time series {series.name} length {series.size} < 100 is too short")
-    
+
     if series.std() == 0:
         return 1
-           
-    assert tau > 0 
+
+    assert tau > 0
     maxDim = (series.size - 1) / tau + 1
     maxDim = min(10, int(maxDim))
-    embedding_dimension = FNN_n(series.values, tau=tau, maxDim=maxDim)[1] 
+    embedding_dimension = FNN_n(series.values, tau=tau, maxDim=maxDim)[1]
     embedding_dimension = max(1, embedding_dimension)
 
     lags = tau * np.arange(embedding_dimension, dtype=int)

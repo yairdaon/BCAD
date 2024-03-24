@@ -4,10 +4,12 @@
 Created on Sat Feb 17 12:08:37 2018
 
 @author: Vivien Sainte Fare Garnot
+
+This module is modified from mcssa: 
+https://github.com/VSainteuf/mcssa
 """
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 from optht import optht
 
 

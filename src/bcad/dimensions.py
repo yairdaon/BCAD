@@ -54,7 +54,10 @@ def subtract_dims(df,
                   stat_col='stat',
                   n_jobs=1):
     """Calculate dim(outcome) - dim(cause). For a true relation we expect
-    #     dim(outcome) >= dim(cause) <===> dim(outcome) - dim(cause) >= 0"""
+    
+    dim(outcome) >= dim(cause) <===> dim(outcome) - dim(cause) >= 0
+
+    """
     def it(df, grouper, stat_col):
         for grp, data in df.groupby(grouper):
             yield data[['predictor', stat_col]], grp
