@@ -100,3 +100,18 @@ class GSSA:
         else:
             raise NotImplemented("Data must be pd.Series or pd.DataFrame")
 
+
+def denoise(df, M, predictors=None):
+    """ Remove noise with SSA and optimal hard thresholding. M is window size.
+    
+    """
+
+    if M == 0:
+        return df
+
+    predictors = df.columns if predictors is None else predictors
+    for pred in predictors:
+        
+        # SSA with Gavish and Donoho's optimal hard threshold
+        df[pred] = GSSA.reconstruct(data=df[pred], M=M)  
+    return df

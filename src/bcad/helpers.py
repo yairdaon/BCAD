@@ -12,6 +12,10 @@ def infer(df,
           predictors,
           n_bootstrap=200,
           estimators=BESTIMATORS):
+    """
+    Runs bcad basically
+    """
+
     res = bootstrap(df=df,
                     n_bootstrap=n_bootstrap,
                     predictors=predictors,
@@ -34,6 +38,10 @@ def fon(x):
 
 
 def decisions(df, estimators):
+    """
+    Aggregates the output of infer to make decisions. 
+    """
+    
     df = df.query("estimator in @estimators")
     grouper = ['cause', 'outcome']
     theta_hat = df.query("cycle == 0").groupby(grouper).theta_hat.mean().sort_index()
