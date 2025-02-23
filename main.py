@@ -18,7 +18,8 @@ def main(n_bootstrap: ("number of bootstrap cycles", 'option', 'n') = 200,
 
     ## AH absolute humidity, VP vapor pressure, 
     df = pd.read_csv(f"data/{state}.csv", index_col='time', infer_datetime_format=True, parse_dates=True)
-
+    df = (df - df.mean()) / df.std()
+    
     ## SSA window
     M = int(365 * M_years / 7) ## 365 days in a year, sampled weekly
 
@@ -27,7 +28,17 @@ def main(n_bootstrap: ("number of bootstrap cycles", 'option', 'n') = 200,
     
     ## R is the Reproduction number calculated from pi_inc (pneumonia and infulenza weekly incidence).
     dd = dd.assign(R=transform(dd.pi_inc, window=window, shift=shift)).dropna()
-
+    tmp = dd.query("'1978-06-01' < index < '1981-06-01'")[['pi_inc', 'R']]
+    tmp = (tmp-tmp.mean())/tmp.std()
+    tmp.columns = ["P&I", r"$R_t$"]
+    tmp.plot()
+    plt.ylabel("Normalized Units", fontsize=22)
+    plt.xlabel("Time", fontsize=22)
+    plt.legend(fontsize=22)
+    plt.yticks([])
+    plt.tight_layout()
+    plt.show()
+    
     ## Run BCAD, basically 
     res = infer(dd,
                 n_bootstrap=n_bootstrap,

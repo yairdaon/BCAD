@@ -52,3 +52,11 @@ def decisions(df, estimators):
     estimators = estimators if type(estimators) == str else ','.join(estimators)
     res = pd.concat([bs, theta_hat], axis=1).assign(estimator=estimators)
     return res
+
+
+# def get_state_date(state):
+#     from pathlib import Path
+#     path = Path(__file__).absolute()
+#     print(path)
+
+    
